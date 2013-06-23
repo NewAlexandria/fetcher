@@ -1,9 +1,15 @@
 # require File.dirname(__FILE__) + '/../../../../config/boot'
 require 'rubygems'
 require 'test/unit'
-require 'mocha'
+require 'mocha/setup'
 require 'fetcher'
-
+#Dir.chdir(File.dirname(__FILE__) + '/../lib/') do |d|
+#  load 'fetcher/base.rb'
+#  load 'fetcher/imap.rb'
+#  load 'fetcher/pop.rb'
+#  load 'fetcher.rb'
+#end
+#
 class FetcherTest < Test::Unit::TestCase
   
   def setup
@@ -69,6 +75,59 @@ class FactoryFetcherTest < Test::Unit::TestCase
     assert_raise(ArgumentError) { Fetcher.create({}) }
   end
   
+  def test_should_accept_scope
+    # pending
+  end
+  
+  def test_should_accept_empty_scope
+    # pending
+  end
 end
 
 # Write tests for sub-classes
+
+class ImapFetcherTest < Test::Unit::TestCase
+  
+  def setup
+    @receiver = mock()
+    
+    @fetcher = Fetcher.create(:type => :imap, :server => 'test.host',
+                              :username => 'name',
+                              :password => 'password',
+                              :receiver => @receiver)
+  end
+  
+  def test_should_accept_scope
+    # pending
+  end
+  
+  def test_should_accept_empty_scope
+    # pending
+  end
+  
+  def test_should_accept_scope_within_rfc_3501_v4_r1
+    SEARCH_FLAGS = ['DELETED', 'DRAFT', 'FLAGGED', 'NEW', 'OLD', 'RECENT', "SEEN", 'UNANSWERED', 'UNDELETED', 'UNDRAFT', 'UNFLAGGED', 'UNSEEN'] # RFC 3501 v.4rev1
+    # pending
+  end
+end
+
+class PopFetcherTest < Test::Unit::TestCase
+  
+  def setup
+    @receiver = mock()
+    
+    @fetcher = Fetcher.create(:type => :pop, :server => 'test.host',
+                              :username => 'name',
+                              :password => 'password',
+                              :receiver => @receiver)
+  end
+  
+  def test_should_accept_scope
+    # pending
+  end
+  
+  def test_should_accept_empty_scope
+    # pending
+  end
+end
+

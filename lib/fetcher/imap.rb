@@ -5,6 +5,7 @@ module Fetcher
   class Imap < Base
     
     PORT = 143
+    SEARCH_FLAGS = ['DELETED', 'DRAFT', 'FLAGGED', 'NEW', 'OLD', 'RECENT', "SEEN", 'UNANSWERED', 'UNDELETED', 'UNDRAFT', 'UNFLAGGED', 'UNSEEN'] # RFC 3501 v.4rev1
     
     protected
     
@@ -41,17 +42,23 @@ module Fetcher
     end
     
     # Retrieve messages from server
-    def get_messages
+    def get_messages(scope)
+      scope  = [scope] unless scope.is_a?(Array)
+      scope &= SEARCH_FLAGS
+      scope  = ['ALL'] if scope.empty?
+      Rails.logger.info "IMAP SCOPE: #{scope}"
+
       @connection.select(@in_folder)
-      @connection.uid_search(['ALL']).each do |uid|
+      @connection.uid_search(scope).each do |uid|
         msg = @connection.uid_fetch(uid,'RFC822').first.attr['RFC822']
         begin
+          Rails.logger.info "MSG UID: #{uid}"
           process_message(msg)
           add_to_processed_folder(uid) if @processed_folder
         rescue
           handle_bogus_message(msg)
         end
-        # Mark message as deleted 
+        # Mark message as deleted
         @connection.uid_store(uid, "+FLAGS", [:Seen, :Deleted])
       end
     end

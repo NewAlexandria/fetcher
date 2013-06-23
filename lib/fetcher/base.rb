@@ -27,15 +27,16 @@ module Fetcher
     end
     
     # Run the fetching process
-    def fetch
+    def fetch(scope=nil)
       establish_connection
-      get_messages
+      get_messages(scope)
       close_connection
     end
     
     protected
     
     # Stub. Should be overridden by subclass.
+    # Sub-classes should receive the `scope` and choose how to act upon it
     def establish_connection #:nodoc:
       raise NotImplementedError, "This method should be overridden by subclass"
     end
